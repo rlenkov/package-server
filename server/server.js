@@ -2,22 +2,18 @@ const express = require('express')
 // const session = require('express-session')
 const bodyParser = require('body-parser')
 const path = require('path')
+const files = require('./routers/files')
 
 const app = express()
 const publicPath = path.join(__dirname, '..', 'public')
 
 // Heroku sets this
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 9000
 
 app.use(express.static(publicPath))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
-// app.use('/items', items)
-// app.use('/users', users)
-// app.use('/groups', groups)
-// app.use('/user_groups', userGroups)
-// app.use(general)
+app.use('/files', files)
 
 // always just serve index.html on random routes
 app.get('*', (req, resp) => {

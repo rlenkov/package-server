@@ -1,4 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import UserInterface from './components/UserInterface'
 
-ReactDOM.render(<h1>Hi</h1>, document.getElementById('app'))
+ReactDOM.render(<UserInterface />, document.getElementById('app'))
