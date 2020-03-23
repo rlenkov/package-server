@@ -4,7 +4,7 @@ const fs = require('fs')
 const axios = require('axios')
 const url = require('url')
 const http = require('http')
-// const { exec, swpan } = require('child_process')
+const archiver = require('archiver')
 
 const readdirp = promisify(fs.readdir)
 const statp = promisify(fs.stat)
@@ -22,7 +22,7 @@ const getSessionDir = async () => {
     }
 }
 
-const downloadImage = async (fileUrl, downloadDir = resourcesPath) => {
+const downloadFile = async (fileUrl, downloadDir = resourcesPath) => {
     const fileName = url
         .parse(fileUrl)
         .pathname.split('/')
@@ -47,30 +47,45 @@ const downloadImage = async (fileUrl, downloadDir = resourcesPath) => {
     })
 }
 
-const downloadFileHttpget = (fileUrl, downloadDir = resourcesPath) => {
-    const options = {
-        host: url.parse(fileUrl).host,
-        port: 80,
-        path: url.parse(fileUrl).pathname,
-    }
+const zipDirectory = async source => {
+    const archive = archiver('zip', { zlib: { level: 9 } })
+    const stream = fs.createWriteStream(`${source}.zip`)
 
-    const fileName = url
-        .parse(fileUrl)
-        .pathname.split('/')
-        .pop()
+    return new Promise((resolve, reject) => {
+        archive
+            .directory(source, false)
+            .on('error', err => reject(err))
+            .pipe(stream)
 
-    const newFilePath = path.join(downloadDir, fileName)
-    const file = fs.createWriteStream(newFilePath)
-
-    http.get(options, res => {
-        res.on('data', data => {
-            file.write(data)
-        }).on('end', () => {
-            file.end()
-            console.log(`${fileName} downloaded to ${downloadDir}`)
-        })
+        stream.on('close', () => resolve(`${source}.zip`))
+        archive.finalize()
     })
 }
+
+// const downloadFileHttpget = (fileUrl, downloadDir = resourcesPath) => {
+//     const options = {
+//         host: url.parse(fileUrl).host,
+//         port: 80,
+//         path: url.parse(fileUrl).pathname,
+//     }
+
+//     const fileName = url
+//         .parse(fileUrl)
+//         .pathname.split('/')
+//         .pop()
+
+//     const newFilePath = path.join(downloadDir, fileName)
+//     const file = fs.createWriteStream(newFilePath)
+
+//     http.get(options, res => {
+//         res.on('data', data => {
+//             file.write(data)
+//         }).on('end', () => {
+//             file.end()
+//             console.log(`${fileName} downloaded to ${downloadDir}`)
+//         })
+//     })
+// }
 
 const listFiles = async (directoryName = resourcesPath, results = []) => {
     let files = await readdirp(directoryName)
@@ -90,7 +105,7 @@ const getFilesForDir = async (items, path, nodeId) => {
     const filesToGet = items.filter(itm => itm.group_id === nodeId)
     if (fs.existsSync(path) && filesToGet.length !== 0) {
         const promises = filesToGet.map(fileObj => {
-            return downloadImage(fileObj.item_url, path)
+            return downloadFile(fileObj.item_url, path)
         })
         await Promise.all(promises)
     }
@@ -113,9 +128,6 @@ const createDirectories = async (
                 const nextDir = childDirs.pop()
                 await createDirectories(nextDir, directoryList, items, newPath)
             }
-            // childDirs.forEach(childDir =>
-            //     createDirectories(childDir, directoryList, items, newPath),
-            // )
         }
     }
 }
@@ -126,22 +138,17 @@ const setupDirectoryTree = async (
     items,
     sessionDirectory = resourcesPath,
 ) => {
-    await createDirectories(
-        rootNode,
-        nodes,
-        items,
-        sessionDirectory,
-    )
+    await createDirectories(rootNode, nodes, items, sessionDirectory)
 }
 
-const createPackage = location => {
-    return 'success'
+const createPackage = async location => {
+    const zipFile = await zipDirectory(location)
+    return zipFile
 }
 
 module.exports = {
     getSessionDir,
     listFiles,
-    downloadFileHttpget,
     setupDirectoryTree,
     createPackage,
 }

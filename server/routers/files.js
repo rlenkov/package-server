@@ -36,7 +36,7 @@ router.post('/download_collection', async (req, res) => {
         }
         const sessionDirectory = await fileManager.getSessionDir()
         await fileManager.setupDirectoryTree(rootNode, nodes, items, sessionDirectory)
-        const package = fileManager.createPackage(sessionDirectory)
+        const package = await fileManager.createPackage(sessionDirectory)
         req.res.json({ package })
     } catch (e) {
         console.error(e)
