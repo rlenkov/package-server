@@ -19,7 +19,25 @@ router.post('/download', async (req, res) => {
         const { url } = req.body
         console.log(url)
         fileManager.downloadFileHttpget(url)
-        req.res.json({ message: 'ur files bro' })
+        req.res.json({ message: url })
+    } catch (e) {
+        console.error(e)
+        res.status(404).send(e)
+    }
+})
+
+router.post('/download_collection', async (req, res) => {
+    try {
+        const { rootNode, nodes, items } = req.body
+        if (!rootNode || !nodes || !items) {
+            // manage cases later
+            res.status(404).send()
+            return
+        }
+        const sessionDirectory = await fileManager.getSessionDir()
+        await fileManager.setupDirectoryTree(rootNode, nodes, items, sessionDirectory)
+        const package = fileManager.createPackage(sessionDirectory)
+        req.res.json({ package })
     } catch (e) {
         console.error(e)
         res.status(404).send(e)

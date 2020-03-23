@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styles from './userinterface.module.scss'
-import { getFileFromUrl, listFiles } from '../calls'
+import { getFileFromUrl, listFiles, testQuery } from '../calls'
 
 const UserInterface = props => {
     const [output, setOutput] = useState('')
@@ -51,6 +51,16 @@ const UserInterface = props => {
                             </label>
                             <button type='submit'>Get File</button>
                         </form>
+                    </div>
+                    <div className={styles.inputBox}>
+                        <button
+                            onClick={() => {
+                                testQuery(getOutput)
+                            }}
+                            type='button'
+                        >
+                            Run Test
+                        </button>
                     </div>
                 </div>
                 <div className={styles.outputContainer}>

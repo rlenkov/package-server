@@ -1,5 +1,97 @@
 import { getRequest, postRequest } from './requests'
 
+export const testQuery = printer => {
+    const rootNode = {
+        id: 1,
+        group_name: 'vtv',
+        parent: null,
+    }
+    const nodes = [
+        {
+            id: 2,
+            group_name: 'interface',
+            parent: 1,
+        },
+        {
+            id: 3,
+            group_name: 'brand',
+            parent: 1,
+        },
+        {
+            id: 4,
+            group_name: 'screens',
+            parent: 2,
+        },
+        {
+            id: 5,
+            group_name: 'videos',
+            parent: 2,
+        },
+        {
+            id: 6,
+            group_name: 'release 6',
+            parent: 4,
+        },
+        {
+            id: 7,
+            group_name: 'release 7',
+            parent: 4,
+        },
+    ]
+    const items = [
+        {
+            id: 1,
+            item_name: 'book',
+            item_url: 'https://i.imgur.com/97aDZ5K.png',
+            group_id: 6,
+        },
+        {
+            id: 2,
+            item_name: 'repair',
+            item_url: 'https://i.imgur.com/8CaScJY.png',
+            group_id: 6,
+        },
+        {
+            id: 3,
+            item_name: 'pencil',
+            item_url: 'https://i.imgur.com/4IFQctc.png',
+            group_id: 6,
+        },
+        {
+            id: 4,
+            item_name: 'cloud',
+            item_url: 'https://i.imgur.com/vfIEmgO.png',
+            group_id: 7,
+        },
+        {
+            id: 5,
+            item_name: 'loader',
+            item_url: 'https://i.imgur.com/STBK97L.png',
+            group_id: 7,
+        },
+    ]
+    const messageBody = {
+        rootNode,
+        nodes,
+        items,
+    }
+    const header = {
+        'Content-Type': 'application/json',
+    }
+    postRequest(
+        '/files/download_collection',
+        messageBody,
+        (response, status) => {
+            printer(`Files Downloaded: ${response.message}`)
+        },
+        () => {
+            console.error('Invalid Operation!')
+            alert('Invalid Operation!')
+        },
+        header,
+    )
+}
+
 export const getFileFromUrl = (url, printer) => {
     const messageBody = {
         url,
@@ -11,9 +103,7 @@ export const getFileFromUrl = (url, printer) => {
         '/files/download',
         messageBody,
         (response, status) => {
-            console.log(response.message)
-            console.log(status)
-            printer('...')
+            printer(`File Downloaded: ${response.message}`)
         },
         () => {
             console.error('Invalid Operation!')
@@ -30,7 +120,6 @@ export const listFiles = printer => {
     getRequest(
         '/files/ls',
         (response, status) => {
-            console.log(response.files)
             printer(response.files)
         },
         () => {
