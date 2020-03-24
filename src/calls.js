@@ -82,7 +82,7 @@ export const testQuery = printer => {
         '/files/download_collection',
         messageBody,
         (response, status) => {
-            printer(`Files Downloaded: ${response.message}`)
+            printer(`Files Downloaded and packaged: ${response.package}`)
         },
         () => {
             console.error('Invalid Operation!')

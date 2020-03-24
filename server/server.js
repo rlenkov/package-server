@@ -6,6 +6,7 @@ const files = require('./routers/files')
 
 const app = express()
 const publicPath = path.join(__dirname, '..', 'public')
+const resourcesPath = path.join(__dirname, '..', 'resources')
 
 // Heroku sets this
 const port = process.env.PORT || 9000
@@ -14,6 +15,7 @@ app.use(express.static(publicPath))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use('/files', files)
+app.use('/packages', express.static(resourcesPath))
 
 // always just serve index.html on random routes
 app.get('*', (req, resp) => {

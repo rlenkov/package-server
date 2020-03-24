@@ -3,7 +3,6 @@ const path = require('path')
 const fs = require('fs')
 const axios = require('axios')
 const url = require('url')
-const http = require('http')
 const archiver = require('archiver')
 
 const readdirp = promisify(fs.readdir)
@@ -62,31 +61,6 @@ const zipDirectory = async source => {
     })
 }
 
-// const downloadFileHttpget = (fileUrl, downloadDir = resourcesPath) => {
-//     const options = {
-//         host: url.parse(fileUrl).host,
-//         port: 80,
-//         path: url.parse(fileUrl).pathname,
-//     }
-
-//     const fileName = url
-//         .parse(fileUrl)
-//         .pathname.split('/')
-//         .pop()
-
-//     const newFilePath = path.join(downloadDir, fileName)
-//     const file = fs.createWriteStream(newFilePath)
-
-//     http.get(options, res => {
-//         res.on('data', data => {
-//             file.write(data)
-//         }).on('end', () => {
-//             file.end()
-//             console.log(`${fileName} downloaded to ${downloadDir}`)
-//         })
-//     })
-// }
-
 const listFiles = async (directoryName = resourcesPath, results = []) => {
     let files = await readdirp(directoryName)
     for (let f of files) {
@@ -143,7 +117,7 @@ const setupDirectoryTree = async (
 
 const createPackage = async location => {
     const zipFile = await zipDirectory(location)
-    return zipFile
+    return path.parse(zipFile).base
 }
 
 module.exports = {

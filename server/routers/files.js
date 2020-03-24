@@ -35,9 +35,19 @@ router.post('/download_collection', async (req, res) => {
             return
         }
         const sessionDirectory = await fileManager.getSessionDir()
-        await fileManager.setupDirectoryTree(rootNode, nodes, items, sessionDirectory)
-        const package = await fileManager.createPackage(sessionDirectory)
-        req.res.json({ package })
+        await fileManager.setupDirectoryTree(
+            rootNode,
+            nodes,
+            items,
+            sessionDirectory,
+        )
+        const zipPackage = await fileManager.createPackage(sessionDirectory)
+        // serve up package for download
+        req.res.json({
+            package: zipPackage,
+            hostname: req.headers.host,
+            path: 'packages',
+        })
     } catch (e) {
         console.error(e)
         res.status(404).send(e)
