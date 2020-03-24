@@ -9,7 +9,9 @@ module.exports = env => {
 
     return {
         mode: 'development',
-        entry: path.resolve(__dirname, 'src', 'app.js'),
+        entry: isDevelopment
+            ? path.resolve(__dirname, 'src', 'app.js')
+            : path.resolve(__dirname, 'src', 'prodApp.js'),
         output: {
             path: path.resolve(__dirname, 'public'),
             filename: 'bundle.js',

@@ -20,7 +20,7 @@ const UserInterface = props => {
 
     return (
         <div className={styles.container}>
-            <h1>Welcome!</h1>
+            <h1>TEST INTERFACE!</h1>
             <div className={styles.managerContainer}>
                 <div className={styles.inputContainer}>
                     <div className={styles.inputBox}>
@@ -30,7 +30,7 @@ const UserInterface = props => {
                             }}
                             type='button'
                         >
-                            List
+                            List Resource Dir
                         </button>
                     </div>
                     <div className={styles.inputBox}>
@@ -40,7 +40,7 @@ const UserInterface = props => {
                             }}
                         >
                             <label>
-                                URL:
+                                Download from URL:
                                 <input
                                     type='text'
                                     id='file-url'
@@ -59,7 +59,7 @@ const UserInterface = props => {
                             }}
                             type='button'
                         >
-                            Run Test
+                            Run Test Packaging
                         </button>
                     </div>
                 </div>
