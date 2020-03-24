@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
 const files = require('./routers/files')
+const fileManager = require('./fileManagers/fileManager')
 
 const app = express()
 const publicPath = path.join(__dirname, '..', 'public')
@@ -25,3 +26,6 @@ app.get('*', (req, resp) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)
 })
+
+// Start cleanup cycle every 30 minutes
+setInterval(fileManager.intervalCleanup, 1800000)

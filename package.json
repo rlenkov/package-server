@@ -49,6 +49,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-modal": "^3.8.1",
+    "rimraf": "^3.0.2",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "validator": "^10.11.0",

@@ -4,6 +4,7 @@ const fs = require('fs')
 const axios = require('axios')
 const url = require('url')
 const archiver = require('archiver')
+const rimraf = require('rimraf')
 
 const readdirp = promisify(fs.readdir)
 const statp = promisify(fs.stat)
@@ -117,7 +118,39 @@ const setupDirectoryTree = async (
 
 const createPackage = async location => {
     const zipFile = await zipDirectory(location)
+    rimraf(location, () => {
+        console.log(`Directory deleted at ${location}`)
+    })
     return path.parse(zipFile).base
+}
+
+const intervalCleanup = () => {
+    console.log('Running cleanup cycle...')
+    fs.readdir(resourcesPath, (err, files) => {
+        if (files.length === 0) {
+            console.log('Nothing to clean up.')
+            return
+        }
+        console.log('Content:')
+        console.log(files)
+        files.forEach((file, index) => {
+            fs.stat(path.join(resourcesPath, file), (err, stat) => {
+                if (err) {
+                    return console.error(err)
+                }
+                const now = new Date().getTime()
+                const endTime = new Date(stat.ctime).getTime() + 900000 // 15 minutes
+                if (now > endTime) {
+                    return rimraf(path.join(resourcesPath, file), err => {
+                        if (err) {
+                            return console.error(err)
+                        }
+                        console.log(`Successfully deleted: ${file}`)
+                    })
+                }
+            })
+        })
+    })
 }
 
 module.exports = {
@@ -125,4 +158,5 @@ module.exports = {
     listFiles,
     setupDirectoryTree,
     createPackage,
+    intervalCleanup,
 }
